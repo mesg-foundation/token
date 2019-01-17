@@ -1,0 +1,34 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "truffle": "truffle",
+    "compile": "truffle compile",
+    "compile-old": "truffle compile  && cp build/contracts/Marketplace.json service && cp build/contracts/Service.json service",
+    "migrate": "truffle migrate",
+    "lint:sol": "solium -d .",
+    "lint:sol:fix": "solium --fix -d .",
+    "test": "truffle test",
+    "generateTS": "npm run compile && typechain --target=web3-1.0.0 --outDir=build/typescript './build/contracts/*.json'"
+  },
+  "keywords": [],
+  "author": "Anthony Estebe <anthony@mesg.com>",
+  "license": "ISC",
+  "dependencies": {
+    "openzeppelin-solidity": "^2.1.0",
+    "truffle": "^5.0.1",
+    "truffle-hdwallet-provider": "^1.0.2"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eth-gas-reporter": "^0.1.12",
+    "ethlint": "^1.2.2",
+    "truffle-assertions": "^0.7.2",
+    "typechain": "^0.3.11"
+  },
+  "description": ""
+}
