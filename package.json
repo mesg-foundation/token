@@ -1,11 +1,10 @@
 {
-  "name": "marketplace",
+  "name": "token",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "truffle": "truffle",
     "compile": "truffle compile",
-    "compile-old": "truffle compile  && cp build/contracts/Marketplace.json service && cp build/contracts/Service.json service",
     "migrate": "truffle migrate",
     "lint:sol": "solium -d .",
     "lint:sol:fix": "solium --fix -d .",
@@ -13,7 +12,7 @@
     "generateTS": "npm run compile && typechain --target=web3-1.0.0 --outDir=build/typescript './build/contracts/*.json'"
   },
   "keywords": [],
-  "author": "Anthony Estebe <anthony@mesg.com>",
+  "author": "Nicolas Mahe <nicolas@mesg.com>",
   "license": "ISC",
   "dependencies": {
     "openzeppelin-solidity": "^2.1.0",
