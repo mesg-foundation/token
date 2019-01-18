@@ -8,13 +8,15 @@ const config = require('../migrations/config.js')
 
 const calculatedTotalSupply = mulDecimals(config.totalSupply, config.decimals)
 
+const {
+  MESG_TOKEN_NICOLAS_FUND: nicolasFund, // Team and Founders 12.5%
+  MESG_TOKEN_MESG_SALE: mesgSale, // Sale Distribution 62.5%
+  MESG_TOKEN_MESG_RESERVE: mesgReserve, // Reserve 20% + pauser role
+  MESG_TOKEN_MESG_PARTNERS_BOUNTIES: mesgPartnersBounties // Partners & Bounties 5%
+} = process.env
+
 contract('MESG Token', async (accounts) => {
   const [
-    nicolasCreator,
-    nicolasFund, // Team and Founders 12.5%
-    mesgSale, // Sale Distribution 62.5%
-    mesgReserve, // Reserve 20% + pauser role
-    mesgPartnersBounties, // Partners & Bounties 5%
     other
   ] = accounts
   let contract = null
@@ -44,10 +46,10 @@ contract('MESG Token', async (accounts) => {
 
   describe('balances', async () => {
     let totalBalances = BN(0)
-    it('nicolasCreator should have 0', async () => {
-      const balance = await contract.balanceOf(nicolasCreator)
-      assert.isTrue(balance.eq(BN(0)))
-    })
+    // it('contractCreator should have 0', async () => {
+    //   const balance = await contract.balanceOf(contractCreator)
+    //   assert.isTrue(balance.eq(BN(0)))
+    // })
 
     it('nicolasFund should have 12.5%', async () => {
       const balance = await contract.balanceOf(nicolasFund)
@@ -95,9 +97,9 @@ contract('MESG Token', async (accounts) => {
       assert.isTrue(await contract.isPauser(mesgReserve))
     })
 
-    it('nicolasCreator should not be pauser', async () => {
-      assert.isFalse(await contract.isPauser(nicolasCreator))
-    })
+    // it('contractCreator should not be pauser', async () => {
+    //   assert.isFalse(await contract.isPauser(contractCreator))
+    // })
 
     it('nicolasFund should not be pauser', async () => {
       assert.isFalse(await contract.isPauser(nicolasFund))
