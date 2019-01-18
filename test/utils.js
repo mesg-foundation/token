@@ -1,7 +1,7 @@
 const web3 = require('web3')
 
 const testConfig = {
-  name: 'MESG Token Test',
+  name: 'MESG Test',
   symbol: 'MESG Test',
   decimals: 18,
   totalSupply: 100000000

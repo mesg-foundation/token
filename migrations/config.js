@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'MESG Token',
+  name: 'MESG',
   symbol: 'MESG',
   decimals: 18,
   totalSupply: 250000000,
