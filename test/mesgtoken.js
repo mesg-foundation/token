@@ -2,87 +2,117 @@
 /* global contract, artifacts */
 
 const assert = require('chai').assert
-const truffleAssert = require('truffle-assertions')
-const utils = require('./utils')
+const { BN, mulDecimals, percent } = require('./utils')
 const MESGToken = artifacts.require('MESGToken')
+const config = require('../migrations/config.js')
 
-const name = 'MESG Token'
-const symbol = 'MESG'
-const decimals = 18
-const totalSupply = 250000000
-const calculatedTotalSupply = utils.BN(totalSupply).mul(utils.BN(10).pow(utils.BN(decimals)))
-const newDefaultToken = (owner) => MESGToken.new(name, symbol, decimals, totalSupply, { from: owner })
+const calculatedTotalSupply = mulDecimals(config.totalSupply, config.decimals)
 
-module.exports = { name, symbol, decimals, totalSupply, newDefaultToken }
-
-const assertEventTransferEvent = (tx, from, to, value) => {
-  truffleAssert.eventEmitted(tx, 'Transfer')
-  const event = tx.logs[0].args
-  assert.equal(event.from, from)
-  assert.equal(event.to, to)
-  assert.isTrue(event.value.eq(utils.BN(value)))
-}
-
-contract('MESG Token', async ([ contractOwner, userA, userB, other ]) => {
+contract('MESG Token', async (accounts) => {
+  const [
+    nicolasCreator,
+    nicolasFund, // Team and Founders 12.5%
+    mesgSale, // Sale Distribution 62.5%
+    mesgReserve, // Reserve 20% + pauser role
+    mesgPartnersBounties, // Partners & Bounties 5%
+    other
+  ] = accounts
   let contract = null
 
   before(async () => {
-    contract = await newDefaultToken(contractOwner)
+    contract = await MESGToken.deployed()
+    console.log('deployed address', contract.address)
   })
 
-  it('should have the right supply', async () => {
-    assert.isTrue((await contract.totalSupply()).eq(calculatedTotalSupply))
+  describe('metadata', async () => {
+    it('should have the right supply', async () => {
+      assert.isTrue((await contract.totalSupply()).eq(calculatedTotalSupply))
+    })
+
+    it('should have the right name', async () => {
+      assert.equal(await contract.name(), config.name)
+    })
+
+    it('should have the right symbol', async () => {
+      assert.equal(await contract.symbol(), config.symbol)
+    })
+
+    it('should have the right decimals', async () => {
+      assert.equal(await contract.decimals(), config.decimals)
+    })
   })
 
-  it('should have the right name', async () => {
-    assert.equal(await contract.name(), name)
+  describe('balances', async () => {
+    let totalBalances = BN(0)
+    it('nicolasCreator should have 0', async () => {
+      const balance = await contract.balanceOf(nicolasCreator)
+      assert.isTrue(balance.eq(BN(0)))
+    })
+
+    it('nicolasFund should have 12.5%', async () => {
+      const balance = await contract.balanceOf(nicolasFund)
+      const configPercent = config.balances['nicolasFund']
+      assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
+      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      totalBalances = totalBalances.add(balance)
+    })
+
+    it('mesgSale should have 62.5%', async () => {
+      const balance = await contract.balanceOf(mesgSale)
+      const configPercent = config.balances['mesgSale']
+      assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
+      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      totalBalances = totalBalances.add(balance)
+    })
+
+    it('mesgReserve should have 20%', async () => {
+      const balance = await contract.balanceOf(mesgReserve)
+      const configPercent = config.balances['mesgReserve']
+      assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
+      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      totalBalances = totalBalances.add(balance)
+    })
+
+    it('mesgPartnersBounties should have 5%', async () => {
+      const balance = await contract.balanceOf(mesgPartnersBounties)
+      const configPercent = config.balances['mesgPartnersBounties']
+      assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
+      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      totalBalances = totalBalances.add(balance)
+    })
+
+    it('total balance should be equal to total supply', async () => {
+      assert.isTrue(calculatedTotalSupply.eq(totalBalances))
+    })
+
+    it('other should have 0', async () => {
+      assert.isTrue((await contract.balanceOf(other)).eq(BN(0)))
+    })
   })
 
-  it('should have the right symbol', async () => {
-    assert.equal(await contract.symbol(), symbol)
-  })
+  describe('pauser roles', async () => {
+    it('mesgReserve should be pauser', async () => {
+      assert.isTrue(await contract.isPauser(mesgReserve))
+    })
 
-  it('should have the right decimals', async () => {
-    assert.equal(await contract.decimals(), decimals)
-  })
+    it('nicolasCreator should not be pauser', async () => {
+      assert.isFalse(await contract.isPauser(nicolasCreator))
+    })
 
-  it('creator should have all the supply', async () => {
-    const balanceOf = await contract.balanceOf(contractOwner)
-    assert.isTrue(balanceOf.eq(calculatedTotalSupply))
-  })
+    it('nicolasFund should not be pauser', async () => {
+      assert.isFalse(await contract.isPauser(nicolasFund))
+    })
 
-  it('other should have 0 token', async () => {
-    const balanceOf = await contract.balanceOf(other)
-    assert.isTrue(balanceOf.eq(utils.BN(0)))
-  })
+    it('mesgSale should not be pauser', async () => {
+      assert.isFalse(await contract.isPauser(mesgSale))
+    })
 
-  it('creator should transfer 100 token to userA', async () => {
-    const tx = await contract.transfer(userA, 100, { from: contractOwner })
-    assertEventTransferEvent(tx, contractOwner, userA, 100)
-  })
+    it('mesgPartnersBounties should not be pauser', async () => {
+      assert.isFalse(await contract.isPauser(mesgPartnersBounties))
+    })
 
-  it('creator should have 100 token less', async () => {
-    const balanceOf = await contract.balanceOf(contractOwner)
-    assert.isTrue(balanceOf.eq(calculatedTotalSupply.sub(utils.BN(100))))
-  })
-
-  it('userA should have 100 token', async () => {
-    const balanceOf = await contract.balanceOf(userA)
-    assert.isTrue(balanceOf.eq(utils.BN(100)))
-  })
-
-  it('userA should transfer 100 token to userB', async () => {
-    const tx = await contract.transfer(userB, 100, { from: userA })
-    assertEventTransferEvent(tx, userA, userB, 100)
-  })
-
-  it('userA should have 0 token', async () => {
-    const balanceOf = await contract.balanceOf(userA)
-    assert.isTrue(balanceOf.eq(utils.BN(0)))
-  })
-
-  it('userB should have 100 token', async () => {
-    const balanceOf = await contract.balanceOf(userB)
-    assert.isTrue(balanceOf.eq(utils.BN(100)))
+    it('other should not be pauser', async () => {
+      assert.isFalse(await contract.isPauser(other))
+    })
   })
 })

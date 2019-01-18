@@ -5,7 +5,7 @@
   "scripts": {
     "truffle": "truffle",
     "compile": "truffle compile",
-    "migrate": "truffle migrate",
+    "migrate": "truffle migrate --interactive",
     "lint:sol": "solium -d .",
     "lint:sol:fix": "solium --fix -d .",
     "test": "truffle test",

@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-/* global contract */
+/* global contract, artifacts */
 
 const assert = require('chai').assert
 const truffleAssert = require('truffle-assertions')
-
-const { newDefaultToken } = require('./mesgtoken')
+const MESGToken = artifacts.require('MESGToken')
+const { newDefaultToken } = require('./utils')
 
 contract('MESG Token Pausable', async accounts => {
   const [
@@ -17,7 +17,7 @@ contract('MESG Token Pausable', async accounts => {
 
   describe('Pauser role', async () => {
     before(async () => {
-      contract = await newDefaultToken(originalOwner)
+      contract = await newDefaultToken(MESGToken, originalOwner)
     })
 
     it('original owner should be pauser', async () => {
@@ -49,7 +49,7 @@ contract('MESG Token Pausable', async accounts => {
 
   describe('Pause contract', async () => {
     before(async () => {
-      contract = await newDefaultToken(originalOwner)
+      contract = await newDefaultToken(MESGToken, originalOwner)
     })
 
     it('should pause', async () => {
