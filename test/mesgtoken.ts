@@ -1,3 +1,5 @@
+import { MESGTokenInstance } from "../types/truffle-contracts";
+
 /* eslint-env mocha */
 /* global contract, artifacts */
 
@@ -13,13 +15,13 @@ const {
   MESG_TOKEN_MESG_SALE: mesgSale, // Sale Distribution 62.5%
   MESG_TOKEN_MESG_RESERVE: mesgReserve, // Reserve 20% + pauser role
   MESG_TOKEN_MESG_PARTNERS_BOUNTIES: mesgPartnersBounties // Partners & Bounties 5%
-} = process.env
+} = process.env as
 
-contract('MESG Token', async (accounts) => {
+contract('MESG Token', accounts => {
   const [
     other
   ] = accounts
-  let contract = null
+  let contract: MESGTokenInstance
 
   before(async () => {
     contract = await MESGToken.deployed()
@@ -55,7 +57,7 @@ contract('MESG Token', async (accounts) => {
       const balance = await contract.balanceOf(nicolasFund)
       const configPercent = config.balances['nicolasFund']
       assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
-      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      assert.equal(balance.times(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
       totalBalances = totalBalances.add(balance)
     })
 
@@ -63,7 +65,7 @@ contract('MESG Token', async (accounts) => {
       const balance = await contract.balanceOf(mesgSale)
       const configPercent = config.balances['mesgSale']
       assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
-      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      assert.equal(balance.times(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
       totalBalances = totalBalances.add(balance)
     })
 
@@ -71,7 +73,7 @@ contract('MESG Token', async (accounts) => {
       const balance = await contract.balanceOf(mesgReserve)
       const configPercent = config.balances['mesgReserve']
       assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
-      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      assert.equal(balance.times(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
       totalBalances = totalBalances.add(balance)
     })
 
@@ -79,7 +81,7 @@ contract('MESG Token', async (accounts) => {
       const balance = await contract.balanceOf(mesgPartnersBounties)
       const configPercent = config.balances['mesgPartnersBounties']
       assert.isTrue(balance.eq(percent(calculatedTotalSupply, configPercent)))
-      assert.equal(balance.mul(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
+      assert.equal(balance.times(BN(1000)).div(calculatedTotalSupply).toNumber() / 10, configPercent)
       totalBalances = totalBalances.add(balance)
     })
 

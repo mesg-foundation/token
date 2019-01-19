@@ -13,7 +13,7 @@ const {
   MESG_TOKEN_MESG_PARTNERS_BOUNTIES: mesgPartnersBounties // Partners & Bounties 5%
 } = process.env
 
-module.exports = async (deployer) => {
+module.exports = async function (deployer) {
   console.log('nicolasFund\t\t', nicolasFund)
   console.log('mesgSale\t\t', mesgSale)
   console.log('mesgReserve\t\t', mesgReserve)
@@ -41,4 +41,6 @@ module.exports = async (deployer) => {
 
   console.log('remove nicolasCreator as pauser')
   await contract.renouncePauser()
-}
+} as Truffle.Migration
+
+export {}

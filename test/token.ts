@@ -1,3 +1,5 @@
+import { MESGTokenInstance } from "../types/truffle-contracts";
+
 /* eslint-env mocha */
 /* global contract, artifacts */
 
@@ -8,7 +10,7 @@ const MESGToken = artifacts.require('MESGToken')
 
 const calculatedTotalSupply = mulDecimals(testConfig.totalSupply, testConfig.decimals)
 
-const assertEventTransferEvent = (tx, from, to, value) => {
+const assertEventTransferEvent = (tx: Truffle.TransactionResponse, from: string, to: string, value: any) => {
   truffleAssert.eventEmitted(tx, 'Transfer')
   const event = tx.logs[0].args
   assert.equal(event.from, from)
@@ -17,7 +19,7 @@ const assertEventTransferEvent = (tx, from, to, value) => {
 }
 
 contract('Token', async ([ contractOwner, userA, userB, other ]) => {
-  let contract = null
+  let contract: MESGTokenInstance
 
   before(async () => {
     contract = await newDefaultToken(MESGToken, contractOwner)

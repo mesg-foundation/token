@@ -1,3 +1,5 @@
+import { MESGTokenInstance } from "../types/truffle-contracts";
+
 /* eslint-env mocha */
 /* global contract, artifacts */
 
@@ -13,7 +15,7 @@ contract('MESG Token Pausable', async accounts => {
     other
   ] = accounts
 
-  let contract = null
+  let contract: MESGTokenInstance
 
   describe('Pauser role', async () => {
     before(async () => {

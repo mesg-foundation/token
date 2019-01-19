@@ -1,3 +1,5 @@
+require('ts-node/register')
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -131,5 +133,7 @@ module.exports = {
       //  evmVersion: "byzantium"
       // }
     }
-  }
+  },
+
+  test_file_extension_regexp: /.*\.ts$/
 }

@@ -2,6 +2,6 @@
 
 var Migrations = artifacts.require('./Migrations.sol')
 
-module.exports = async (deployer) => {
+module.exports = async function (deployer) {
   await deployer.deploy(Migrations)
-}
+} as Truffle.Migration
