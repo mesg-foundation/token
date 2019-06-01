@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eth-gas-reporter": "^0.1.12",
+    "eth-gas-reporter": "^0.2.0",
     "ethlint": "^1.2.2",
     "truffle-assertions": "^0.7.2",
     "typechain": "^0.3.11"
